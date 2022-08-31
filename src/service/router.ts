@@ -53,7 +53,6 @@ export async function createRouter(
     const query = `ResourceContainers
 | where type =~ "microsoft.resources/subscriptions/resourcegroups"
 | where tags["${tagKey}"] =~ "${tagValue}"`;
-    logger.info(query);
     return client.resources(
       { query: query },
       { resultFormat: 'table' }
@@ -97,7 +96,6 @@ export async function createRouter(
     ) on resourceGroup
 | where statusCode =~"Unhealthy"
 | project resourceId, displayName, link, resourceName, resourceType, resourceGroup, severity`;
-    logger.info(query);
     return client.resources(
         { query: query },
         { resultFormat: 'table' }
