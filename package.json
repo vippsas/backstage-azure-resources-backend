@@ -1,10 +1,14 @@
 {
-  "name": "@vippsas/plugin-azure-resources-backend",
+  "name": "@vippsno/plugin-azure-resources-backend",
+  "description": "A backstage backend plugin that queries Azure Resource graph. Needs the frontend plugin to work properly",
+  "author": {"name": "@ehrnst"},
+  "contributors": [
+  ],
   "version": "1.0.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
-  "license": "Apache-2.0",
-  "private": true,
+  "license": "MIT",
+  "private": false,
   "publishConfig": {
     "access": "public",
     "main": "dist/index.cjs.js",
