@@ -9,7 +9,7 @@ Add following to your backstage instance
 
 ```TypeScript
 /// ./packages/backend/src/azure-resources-backend.ts
-import { createRouter } from '@vippsas/plugin-azure-resources-backend';
+import { createRouter } from '@vippsno/plugin-azure-resources-backend';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 
