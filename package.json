@@ -1,6 +1,10 @@
 {
   "name": "@vippsno/plugin-azure-resources-backend",
   "description": "A backstage backend plugin that queries Azure Resource graph. Needs the frontend plugin to work properly",
+  "homepage": "https://github.com/vippsas/backstage-azure-resources-backend",
+  "bugs": {
+    "url": "https://github.com/vippsas/backstage-azure-resources-backend/issues"
+  },
   "author": {"name": "@ehrnst"},
   "contributors": [
   ],
