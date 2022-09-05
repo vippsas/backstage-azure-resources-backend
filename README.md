@@ -7,8 +7,14 @@ The backend API plugin used by the frontend plugin. This plugin wraps a few Azur
 
 Add following to your backstage instance
 
+```
+# From the Backstage root directory
+cd packages/backend
+yarn add @vippsno/plugin-azure-resources-backend
+```
+
 ```TypeScript
-/// ./packages/backend/src/azure-resources-backend.ts
+/// ./packages/backend/src/plugins/azure-resources-backend.ts
 import { createRouter } from '@vippsno/plugin-azure-resources-backend';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
