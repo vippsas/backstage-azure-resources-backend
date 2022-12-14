@@ -132,12 +132,13 @@ export async function createRouter(
             resources = tostring(properties.resourceMetadata.resourceId),
             savings = todouble(properties.extendedProperties.savingsAmount),
             solution = tostring(properties.shortDescription.solution),
-            currency = tostring(properties.extendedProperties.savingsCurrency)
+            currency = tostring(properties.extendedProperties.savingsCurrency),
+            impact = tostring(properties.impact)
         )   on subscriptionId
     | summarize
       dcount(resources),
       bin(sum(savings), 0.01)
-      by solution, currency
+      by solution, currency, impact
     | project-away dcount_resources`;
     return client.resources(
         { query: query },
