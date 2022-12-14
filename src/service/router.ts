@@ -111,6 +111,49 @@ export async function createRouter(
     });
   });
 
+  router.get('/subscription/:tagKey/:tagValue/costadvice', (req, response) => {
+    const client = new ResourceGraphClient(auth);
+    const tagKey = req.params.tagKey
+    const tagValue = req.params.tagValue
+
+    if (!tagKey) {
+      return response.send({
+        error: 'name must be defined'
+      });
+    }
+    
+    const query = `ResourceContainers
+    | where type =~ "microsoft.resources/subscriptions"
+    | where tags["${tagKey}"] =~ "${tagValue}"
+    | join (AdvisorResources
+        | where type == 'microsoft.advisor/recommendations'
+        | where properties.category == 'Cost'
+        | extend
+            resources = tostring(properties.resourceMetadata.resourceId),
+            savings = todouble(properties.extendedProperties.savingsAmount),
+            solution = tostring(properties.shortDescription.solution),
+            currency = tostring(properties.extendedProperties.savingsCurrency)
+        )   on subscriptionId
+    | summarize
+      dcount(resources),
+      bin(sum(savings), 0.01)
+      by solution, currency
+    | project-away dcount_resources`;
+    return client.resources(
+        { query: query },
+        { resultFormat: 'table' }
+    ).then(result => {
+      response.send({
+        total: result.count,
+        data: result.data
+      });
+    }).catch(e => {
+      response.status(500).send({
+        error: e
+      });
+    });
+  });
+
   router.use(errorHandler());
   return router;
 }
