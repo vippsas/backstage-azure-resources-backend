@@ -111,7 +111,7 @@ export async function createRouter(
     });
   });
 
-  router.get('/subscription/:tagKey/:tagValue/costadvice', (req, response) => {
+  router.get('/rg/:tagKey/:tagValue/costadvice', (req, response) => {
     const client = new ResourceGraphClient(auth);
     const tagKey = req.params.tagKey
     const tagValue = req.params.tagValue
@@ -123,7 +123,7 @@ export async function createRouter(
     }
     
     const query = `ResourceContainers
-    | where type =~ "microsoft.resources/subscriptions"
+    | where type =~ "microsoft.resources/subscriptions/resourceGroups"
     | where tags["${tagKey}"] =~ "${tagValue}"
     | join (AdvisorResources
         | where type == 'microsoft.advisor/recommendations'
