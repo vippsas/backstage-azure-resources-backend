@@ -44,12 +44,15 @@ Depending on where your backstage instance is running, there are a few ways to a
 
 ### Using managed identity
 
-In case your backstage instance runs on an Azure resource type that supports system assignen managed identity, the only thing you need to do is assign the `service principal` with read permission on the `resource group`, `subscription(s)` or `management group`, depending on your environment.
+In case your backstage instance runs on an Azure resource type that supports system assigned managed identity (MSI), the only thing you need to do is assign the `service principal` with read permission on the `resource group`, `subscription(s)` or `management group`, depending on your environment.
 
-### App registration
+### Using app registration
 
-Create a [new Application Registration](https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app?WT.mc_id=AZ-MVP-5003437), and assign the SPN appropriate permissions. Then add the following `environment variables` to your application.
+Create a [new Application Registration](https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app?WT.mc_id=AZ-MVP-5003437), and assign the SPN appropriate permissions. Then add the following to your `app-config.yaml` and/or `app-config.local.yaml`. If using MSI you do not add this configuration.
 
-- `AZURE_CLIENT_ID`
-- `AZURE_CLIENT_SECRET`
-- `AZURE_TENANT_ID`
+```yaml
+azureResources:
+  clientId: ab77a497-102e-4c4d-9853-3aca7e733245 # the app registrations clientId
+  clientSecret: ~AcbyiAM2YUMQwUSqhzg # a secret created for the app registration
+  tenantId: f02ae3d3-be5c-4b9d-9d6e-8192055d4083 # your Azure tenant id
+```
