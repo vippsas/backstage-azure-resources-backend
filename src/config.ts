@@ -5,6 +5,9 @@ export class azureResourceConfig {
   constructor(
     public readonly tenantId: string,
     public readonly clientId: string,
+    /**
+     * @visibility secret
+     */
     public readonly clientSecret: string,
   ) {}
 
