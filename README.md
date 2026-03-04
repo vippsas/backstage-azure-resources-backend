@@ -1,58 +1,61 @@
 # Azure resources backend plugin
 
-The backend API plugin used by the frontend plugin. This plugin wraps a few Azure Resource Graph queries to pull information about your Azure resource resources in relation to a backstage entity.
-
+The backend API plugin used by the frontend plugin. This plugin wraps a few Azure Resource Graph queries to pull information about your Azure resources in relation to a Backstage entity.
 
 ## Getting started
 
-Add following to your backstage instance
+Add the package to your Backstage backend:
 
-```
+```bash
 # From the Backstage root directory
 cd packages/backend
 yarn add @vippsno/plugin-azure-resources-backend
 ```
 
-```TypeScript
-/// ./packages/backend/src/plugins/azure-resources-backend.ts
-import { createRouter } from '@vippsno/plugin-azure-resources-backend';
-import { Router } from 'express';
-import { PluginEnvironment } from '../types';
+Register the plugin in `packages/backend/src/index.ts`:
 
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  return await createRouter({
-    logger: env.logger,
-    config: env.config,
-  });
-}
-```
+```typescript
+const backend = createBackend();
 
-```TypeScript
-/// ./packages/backend/src/index.ts
+// ... other plugins ...
 
-import azureResourcesBackend from './plugins/azure-resources-backend';
-const azureResourcesBackendEnv = useHotMemoize(module, () => createEnv('azure-resources-backend'));
-apiRouter.use('/azure-resources', await azureResourcesBackend(azureResourcesBackendEnv));
+backend.add(import('@vippsno/plugin-azure-resources-backend'));
+
+backend.start();
 ```
 
 ## Authentication with Azure
 
-In order for this plugin to work, you'll need an identity with `read` access at the scope you pull information from.  
-Depending on where your backstage instance is running, there are a few ways to authenticate. The plugin uses `@azure/identity` which supports `managed identities` and `application registration`
+The plugin needs an identity with `read` access at the scope you want to query. It uses `@azure/identity`, which supports both managed identity and app registration authentication.
 
-### Using managed identity
+### Using managed identity (recommended)
 
-In case your backstage instance runs on an Azure resource type that supports system assigned managed identity (MSI), the only thing you need to do is assign the `service principal` with read permission on the `resource group`, `subscription(s)` or `management group`, depending on your environment.
+If your Backstage instance runs on an Azure resource that supports managed identity, no configuration is needed. Assign the managed identity `Reader` permissions on the relevant resource groups, subscriptions, or management groups.
 
 ### Using app registration
 
-Create a [new Application Registration](https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app?WT.mc_id=AZ-MVP-5003437), and assign the SPN appropriate permissions. Then add the following to your `app-config.yaml` and/or `app-config.local.yaml`. If using MSI you do not add this configuration.
+Create a [new App Registration](https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app), assign it `Reader` permissions, then add the following to your `app-config.yaml` or `app-config.local.yaml`:
 
 ```yaml
 azureResources:
-  clientId: ab77a497-102e-4c4d-9853-3aca7e733245 # the app registrations clientId
-  clientSecret: ~AcbyiAM2YUMQwUSqhzg # a secret created for the app registration
-  tenantId: f02ae3d3-be5c-4b9d-9d6e-8192055d4083 # your Azure tenant id
+  tenantId: f02ae3d3-be5c-4b9d-9d6e-8192055d4083
+  clientId: ab77a497-102e-4c4d-9853-3aca7e733245
+  clientSecret: ~AcbyiAM2YUMQwUSqhzg
 ```
+
+If no `azureResources` config is present, the plugin falls back to `DefaultAzureCredential` (managed identity / Azure CLI for local dev).
+
+## API endpoints
+
+All endpoints are served under `/api/azure-resources/`.
+
+| Endpoint | Description |
+|---|---|
+| `GET /health` | Health check |
+| `GET /rg/:tagKey/:tagValue` | Resource groups matching a tag |
+| `GET /rg/:tagKey/:tagValue/secrecommendations` | Unhealthy security assessments for matching resource groups |
+| `GET /rg/:tagKey/:tagValue/costadvice` | Azure Advisor cost recommendations for matching resource groups |
+
+## Migrating from the old backend system
+
+If you were using v1.x with the legacy Backstage backend, replace the old wiring with the single `backend.add()` call shown above and remove the plugin file at `packages/backend/src/plugins/azure-resources-backend.ts`.

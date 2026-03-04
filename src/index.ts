@@ -14,4 +14,15 @@
  * limitations under the License.
  */
 
-export * from './service/router';
+export { azureResourcesPlugin as default } from './plugin';
+
+/**
+ * @deprecated Migrate to the new Backstage backend system.
+ * Use the default export plugin instead: `backend.add(import('@vippsno/plugin-azure-resources-backend'))`
+ * @public
+ */
+export { createRouter } from './service/router';
+/** @deprecated @public */
+export type { RouterOptions } from './service/router';
+/** @public */
+export { azureResourceConfig } from './config';

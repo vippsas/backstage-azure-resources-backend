@@ -1,4 +1,4 @@
-import { Config } from '@backstage/config';
+import { RootConfigService } from '@backstage/backend-plugin-api';
 
 /** @public */
 export class azureResourceConfig {
@@ -11,7 +11,7 @@ export class azureResourceConfig {
     public readonly clientSecret: string,
   ) {}
 
-  static fromConfig(config: Config) : azureResourceConfig | null {
+  static fromConfig(config: RootConfigService) : azureResourceConfig | null {
     const azConfig = config.getOptionalConfig('azureResources');
     return azConfig ? new azureResourceConfig(
       azConfig.getString('tenantId'),
