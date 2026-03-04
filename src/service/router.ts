@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 
-import { errorHandler } from '@backstage/backend-common';
 import express from 'express';
-import Router from 'express-promise-router';
-import { Logger } from 'winston';
-import { Config } from '@backstage/config';
+import { LoggerService, RootConfigService } from '@backstage/backend-plugin-api';
 import { ResourceGraphClient } from '@azure/arm-resourcegraph';
 import { ClientSecretCredential, DefaultAzureCredential} from '@azure/identity';
 import { azureResourceConfig } from '../config';
 
 export interface RouterOptions {
-  logger: Logger;
-  config: Config;
+  logger: LoggerService;
+  config: RootConfigService;
 }
 
 export async function createRouter(
@@ -41,7 +38,7 @@ export async function createRouter(
   const client = new ResourceGraphClient(cred);
   const { logger } = options;
 
-  const router = Router();
+  const router = express.Router();
   router.use(express.json());
 
   router.get('/health', (_, response) => {
@@ -160,6 +157,5 @@ export async function createRouter(
     });
   });
 
-  router.use(errorHandler());
   return router;
 }
